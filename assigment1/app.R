@@ -1,13 +1,14 @@
 # app.R
-# Reactive Shiny App (Iris) - Dynamic controls per tab + Summary/Data extra controls
+# Reactive Shiny App - Iris dataset
 
+#libraries
 library(shiny)
 library(ggplot2)
 library(dplyr)
 library(bslib)
 
 has_DT <- requireNamespace("DT", quietly = TRUE)
-data("iris")
+data("iris") #dataset
 
 ui <- fluidPage(
   theme = bs_theme(
@@ -50,7 +51,7 @@ ui <- fluidPage(
     sidebarPanel(
       h4("Controls"),
       
-      # Always-visible controls
+      # Controls always visible, filtering
       selectInput(
         inputId = "species",
         label   = "Filter species",
@@ -86,7 +87,7 @@ ui <- fluidPage(
           "Scatter plot",
           br(),
           plotOutput("scatter", height = "450px"),
-          helpText("Tip: Change X/Y variables and species to see reactive updates.")
+          helpText("Tip: Change X/Y variables and species to see updates.")
         ),
         
         tabPanel(
@@ -114,7 +115,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
-  # Nice consistent palette
+  # Palette colors
   species_cols <- c(
     setosa = "#E45756",
     versicolor = "#4C78A8",
@@ -242,7 +243,7 @@ server <- function(input, output, session) {
       theme(plot.title = element_text(face = "bold"), legend.position = "right")
   })
   
-  # Summary (dynamic: selected variable, optionally grouped by species)
+  # Summary 
   output$summary_txt <- renderPrint({
     df <- filtered_data()
     req(nrow(df) > 0)
@@ -272,7 +273,7 @@ server <- function(input, output, session) {
     cat("------------\n")
     print(stats)
     
-    # Optional group by species
+    # Grouped by species
     if (get_group_species()) {
       cat("\nGrouped by species\n")
       cat("------------------\n")
@@ -291,7 +292,7 @@ server <- function(input, output, session) {
     }
   })
   
-  # Data table (dynamic: columns + number of rows)
+  # Data table
   output$table_ui <- renderUI({
     if (has_DT) DT::DTOutput("data_tbl") else tableOutput("data_tbl_base")
   })
